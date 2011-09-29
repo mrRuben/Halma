@@ -120,6 +120,8 @@ HALMA.drawBoard = function() {
   
   dc.clearRect( 0, 0, HALMA.canvasWidth, HALMA.canvasHeight );
   
+  dc.beginPath();
+  
   // Vertical lines
   for(x = 0; x < HALMA.canvasWidth; x += HALMA.pieceWidth ) {
     dc.moveTo( 0.5 + x, 0 );
@@ -141,6 +143,8 @@ HALMA.drawBoard = function() {
   }
   
   HALMA.moveCountElement.innerHTML = HALMA.moveCount;
+  
+  HALMA.saveGame();
 }
 
 HALMA.drawPiece = function( p, selected ) {
@@ -164,21 +168,47 @@ HALMA.drawPiece = function( p, selected ) {
   
 HALMA.nothingSelected = -1;
   
+HALMA.saveGame = function() {
+  var state; 
+  
+  if( window.localStorage ) {
+    state = JSON.stringify(HALMA.pieces);
+    localStorage['halma.pieces'] = state; 
+    localStorage['halma.moveCount'] = HALMA.moveCount;
+  }
+}
 
+HALMA.resumeGame = function() { 
+  var i;
+  if( window.localStorage && localStorage['halma.pieces'] ) {
+    HALMA.pieces = JSON.parse( localStorage['halma.pieces'] );
+    for( i = 0; i < HALMA.pieces.length; i++ ) {
+      HALMA.pieces[i] = new HALMA.Cell( HALMA.pieces[i].row, HALMA.pieces[i].column );
+    }
+    HALMA.moveCount = parseInt(localStorage['halma.moveCount']);
+    return true;
+  }
+  return false;
+}
+  
 HALMA.newGame = function() {
-  HALMA.pieces = [ new HALMA.Cell( HALMA.boardHeight - 3, 0 ),
-                   new HALMA.Cell( HALMA.boardHeight - 2, 0 ),
-                   new HALMA.Cell( HALMA.boardHeight - 1, 0 ),
-                   new HALMA.Cell( HALMA.boardHeight - 3, 1 ),
-                   new HALMA.Cell( HALMA.boardHeight - 2, 1 ),
-                   new HALMA.Cell( HALMA.boardHeight - 1, 1 ),
-                   new HALMA.Cell( HALMA.boardHeight - 3, 2 ),
-                   new HALMA.Cell( HALMA.boardHeight - 2, 2 ),
-                   new HALMA.Cell( HALMA.boardHeight - 1, 2 )
-    ];
+  
+  if( !HALMA.resumeGame() ) {
+  
+    HALMA.pieces = [ new HALMA.Cell( HALMA.boardHeight - 3, 0 ),
+                     new HALMA.Cell( HALMA.boardHeight - 2, 0 ),
+                     new HALMA.Cell( HALMA.boardHeight - 1, 0 ),
+                     new HALMA.Cell( HALMA.boardHeight - 3, 1 ),
+                     new HALMA.Cell( HALMA.boardHeight - 2, 1 ),
+                     new HALMA.Cell( HALMA.boardHeight - 1, 1 ),
+                     new HALMA.Cell( HALMA.boardHeight - 3, 2 ),
+                     new HALMA.Cell( HALMA.boardHeight - 2, 2 ),
+                     new HALMA.Cell( HALMA.boardHeight - 1, 2 )
+      ];
     
-  HALMA.selectedPieceIndex = HALMA.nothingSelected;    
-  HALMA.moveCount = 0;
+    HALMA.selectedPieceIndex = HALMA.nothingSelected;    
+    HALMA.moveCount = 0;
+  }
   HALMA.drawBoard();
 }
 
