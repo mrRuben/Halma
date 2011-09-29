@@ -1,0 +1,8 @@
+CACHE MANIFEST
+# revision 1
+CACHE:
+halma.html
+js/halma.js
+NETWORK:
+*
+#/ /offline.html
